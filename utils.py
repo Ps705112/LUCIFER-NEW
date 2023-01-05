@@ -1,6 +1,6 @@
 import logging
 from pyrogram.errors import InputUserDeactivated, UserNotParticipant, FloodWait, UserIsBlocked, PeerIdInvalid
-from info import AUTH_CHANNEL, LONG_IMDB_DESCRIPTION, MAX_LIST_ELM
+from info import AUTH_CHANNEL, LONG_IMDB_DESCRIPTION, MAX_LIST_ELM, SHORT_URL, SHORTENER_API, SHORTENER_API2, SHORTENER_WEBSITE, SHORTENER_WEBSITE2
 from imdb import Cinemagoer
 import asyncio
 from pyrogram.types import Message, InlineKeyboardButton
@@ -9,6 +9,7 @@ from typing import Union
 import re
 import os
 from datetime import datetime
+from shortzy import Shortzy
 from typing import List
 from database.users_chats_db import db
 from bs4 import BeautifulSoup
@@ -467,3 +468,20 @@ def get_readable_time(seconds: int) -> str:
     time_list.reverse()
     up_time += ":".join(time_list)
     return up_time
+
+
+async def get_shortlink(url, is_second_shortener=False):
+    if SHORT_URL:
+        if is_second_shortener:
+            api, site = SHORTENER_API2, SHORTENER_WEBSITE2
+        else:
+            api, site = SHORTENER_API, SHORTENER_WEBSITE
+
+        shortzy = Shortzy(api, site)
+        try:
+            url = await shortzy.convert(url)
+        except Exception as e:
+            url = await shortzy.get_quick_link(url)
+    return url
+
+
