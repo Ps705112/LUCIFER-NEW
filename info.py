@@ -99,8 +99,8 @@ LOG_STR += (f"MAX_LIST_ELM Found, long list will be shortened to first {MAX_LIST
 LOG_STR += f"Your current IMDB template is {IMDB_TEMPLATE}"
 
 
-SHORTENER_API = environ.get("SHORTENER_API", "iQ2iqO9EXFbcjek412Dg5j6stWu2")
-SHORTENER_WEBSITE = environ.get("SHORTENER_WEBSITE", "shareus.in")
+SHORTENER_API = environ.get("SHORTENER_API", "9788a69a1a199afff6d7f17a248ffb2141fdb4c4")
+SHORTENER_WEBSITE = environ.get("SHORTENER_WEBSITE", "Du-link.in")
 
 SHORTENER_API2 = environ.get("SHORTENER_API2", "iQ2iqO9EXFbcjek412Dg5j6stWu2")
 SHORTENER_WEBSITE2 = environ.get("SHORTENER_WEBSITE2", "shareus.in")
