@@ -13,7 +13,7 @@ import pyrogram
 from database.connections_mdb import active_connection, all_connections, delete_connection, if_active, make_active, \
     make_inactive
 from info import ADMINS, AUTH_CHANNEL, AUTH_USERS, CUSTOM_FILE_CAPTION, MSG_ALRT, AUTH_GROUPS, P_TTI_SHOW_OFF, GRP_LNK, CHNL_LNK, NOR_IMG, SPELL_IMG, IMDB, \
-    SINGLE_BUTTON, SPELL_CHECK_REPLY, IMDB_TEMPLATE, SUPPORT_GROUP, SUPPORT_CHAT, FILE_CHANNEL_LINK, FILE_CHANNEL, DELETE_TIME, SPL_DELETE_TIME
+    SINGLE_BUTTON, SPELL_CHECK_REPLY, IMDB_TEMPLATE, SUPPORT_GROUP, SUPPORT_CHAT, FILE_CHANNEL_LINK, FILE_CHANNEL, DELETE_TIME, SPL_DELETE_TIME, TUTORIAL_LINK_1, TUTORIAL_LINK_2
 from pyrogram.types import InlineKeyboardMarkup, InlineKeyboardButton, CallbackQuery
 from pyrogram import Client, filters, enums
 from pyrogram.errors import FloodWait, UserIsBlocked, MessageNotModified, PeerIdInvalid
@@ -414,29 +414,46 @@ async def cb_handler(client: Client, query: CallbackQuery):
             alert = alert.replace("\\n", "\n").replace("\\t", "\t")
             await query.answer(alert, show_alert=True)
     if query.data.startswith("file"):
-            verify_id = ''.join(random.choices(string.ascii_uppercase + string.digits, k=7))
+        # User Verifying
+        user_id = query.from_user.id
+        is_second_shortener = await db.use_second_shortener(user_id)
+        if not await db.is_user_verified(user_id) or is_second_shortener:
+
+            verify_id = "".join(
+                random.choices(string.ascii_uppercase + string.digits, k=7)
+            )
 
             await db.create_verify_id(user_id, verify_id)
 
+            how_to_download_link = (
+                TUTORIAL_LINK_2 if is_second_shortener else TUTORIAL_LINK_1
+            )
+
             buttons = [
-                    [
-                        InlineKeyboardButton(
-                            text="🔹 Click hare to Verify 🔹", url=await get_shortlink(f"https://telegram.me/{temp.U_NAME}?start=notcopy_{user_id}_{verify_id}", is_second_shortener)
+                [
+                    InlineKeyboardButton(
+                        text="🔹 Click hare to Verify 🔹",
+                        url=await get_shortlink(
+                            f"https://telegram.me/{temp.U_NAME}?start=notcopy_{user_id}_{verify_id}",
+                            is_second_shortener,
                         ),
-                    ],
-                    [
-                        InlineKeyboardButton(
-                            text="🌀 How to verify 🌀", url=f'https://youtu.be/R0Fhv079dhQ')
-                    ]
-                    
-                ]
+                    ),
+                ],
+                [
+                    InlineKeyboardButton(
+                        text="🌀 How to verify 🌀", url=how_to_download_link
+                    )
+                ],
+            ]
 
             text = f"You'r not verified today. Please verify now and get unlimited access for 1 day)"
-            if query.message.chat.type  == "private":
-                return await query.message.reply_text(text, reply_markup=InlineKeyboardMarkup(buttons))
+            if query.message.chat.type == "private":
+                return await query.message.reply_text(
+                    text, reply_markup=InlineKeyboardMarkup(buttons)
+                )
 
-        # User Verifying 
-
+        # User Verifying            
+ 
         ident, req, file_id = query.data.split("#")
         if int(req) != 0 and query.from_user.id != int(req):
             return await query.answer(script.ALRT_TXT, show_alert=True)
@@ -506,26 +523,36 @@ async def cb_handler(client: Client, query: CallbackQuery):
         user_id = query.from_user.id
         is_second_shortener = await db.use_second_shortener(user_id)
         if not await db.is_user_verified(user_id) or is_second_shortener:
-            verify_id = ''.join(random.choices(string.ascii_uppercase + string.digits, k=7))
-
+            verify_id = "".join(
+                random.choices(string.ascii_uppercase + string.digits, k=7)
+            )
+            how_to_download_link = (
+                TUTORIAL_LINK_2 if is_second_shortener else TUTORIAL_LINK_1
+            )
             await db.create_verify_id(user_id, verify_id)
 
             buttons = [
-                    [
-                        InlineKeyboardButton(
-                            text="🔹 Click hare to Verify 🔹", url=await get_shortlink(f"https://telegram.me/{temp.U_NAME}?start=notcopy_{user_id}_{verify_id}", is_second_shortener)
+                [
+                    InlineKeyboardButton(
+                        text="🔹 Click hare to Verify 🔹",
+                        url=await get_shortlink(
+                            f"https://telegram.me/{temp.U_NAME}?start=notcopy_{user_id}_{verify_id}",
+                            is_second_shortener,
                         ),
-                    ],
-                    [
-                        InlineKeyboardButton(
-                            text="🌀 How to verify 🌀", url=f'https://youtu.be/R0Fhv079dhQ')
-                    ]
-                    
-                ]
+                    ),
+                ],
+                [
+                    InlineKeyboardButton(
+                        text="🌀 How to verify 🌀", url=how_to_download_link
+                    )
+                ],
+            ]
             num = 2 if is_second_shortener else 1
             text = f"You'r not verified today. Please verify - ({num}) now and get unlimited access for 1 day)"
-            if query.message.chat.type  == "private":
-                return await query.message.reply_text(text, reply_markup=InlineKeyboardMarkup(buttons))
+            if query.message.chat.type == "private":
+                return await query.message.reply_text(
+                    text, reply_markup=InlineKeyboardMarkup(buttons)
+                )
 
         # User Verifying
         if AUTH_CHANNEL and not await is_subscribed(client, query):
