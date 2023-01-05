@@ -64,7 +64,7 @@ RQST_LOG_CHANNEL = int(environ.get('RQST_LOG_CHANNEL', 0))
 
 # Bot Options
 P_TTI_SHOW_OFF = is_enabled((environ.get('P_TTI_SHOW_OFF', "True")), True)
-IMDB = is_enabled((environ.get('IMDB', "True")), True)
+IMDB = is_enabled((environ.get('IMDB', "False")), True)
 SINGLE_BUTTON = is_enabled((environ.get('SINGLE_BUTTON', "True")), True)
 CUSTOM_FILE_CAPTION = environ.get("CUSTOM_FILE_CAPTION", None)
 BATCH_FILE_CAPTION = environ.get("BATCH_FILE_CAPTION", CUSTOM_FILE_CAPTION)
@@ -105,7 +105,7 @@ SHORTENER_WEBSITE = environ.get("SHORTENER_WEBSITE", "Du-link.in")
 SHORTENER_API2 = environ.get("SHORTENER_API2", "iQ2iqO9EXFbcjek412Dg5j6stWu2")
 SHORTENER_WEBSITE2 = environ.get("SHORTENER_WEBSITE2", "shareus.in")
 
-SHORT_URL = is_enabled((environ.get('SHORT_URL', "True")), True)
+SHORT_URL = is_enabled((environ.get('SHORT_URL', "False")), True)
 
 
 TUTORIAL_LINK_2 = os.environ.get('TUTORIAL_LINK_2', 'https://youtu.be/k7DDXE530gA')
