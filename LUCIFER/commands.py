@@ -35,7 +35,7 @@ async def start(client:Client, message):
 
         verify_id_info = await db.get_verify_id_info(user_id, verify_id)
         if not verify_id_info or verify_id_info["verified"]:
-            await message.reply("Invalid link. Link has already verified or has wrong hash. Try Again")
+            await message.reply("Invalid link... Link has already verified or has wrong hash.. Try Again")
             return
         
         ist_timezone = pytz.timezone('Asia/Kolkata')
