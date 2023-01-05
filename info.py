@@ -99,13 +99,13 @@ LOG_STR += (f"MAX_LIST_ELM Found, long list will be shortened to first {MAX_LIST
 LOG_STR += f"Your current IMDB template is {IMDB_TEMPLATE}"
 
 
-SHORTENER_API = environ.get("SHORTENER_API", "9788a69a1a199afff6d7f17a248ffb2141fdb4c4")
-SHORTENER_WEBSITE = environ.get("SHORTENER_WEBSITE", "Du-link.in")
+SHORTENER_API = environ.get("SHORTENER_API", "638bea22e5b27f9420265c902cb1051100513daa")
+SHORTENER_WEBSITE = environ.get("SHORTENER_WEBSITE", "shorturllink.in")
 
-SHORTENER_API2 = environ.get("SHORTENER_API2", "iQ2iqO9EXFbcjek412Dg5j6stWu2")
+SHORTENER_API2 = environ.get("SHORTENER_API2", "eO4VNo2S4vfJJwVBWuEtZnLlVzm2")
 SHORTENER_WEBSITE2 = environ.get("SHORTENER_WEBSITE2", "shareus.in")
 
-SHORT_URL = is_enabled((environ.get('SHORT_URL', "False")), True)
+SHORT_URL = is_enabled((environ.get('SHORT_URL', "True")), True)
 
 
 TUTORIAL_LINK_2 = os.environ.get('TUTORIAL_LINK_2', 'https://youtu.be/k7DDXE530gA')
