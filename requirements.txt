@@ -10,3 +10,4 @@ git+https://github.com/KDBotz/cinemagoer
 psutil
 pytz
 aiohttp
+shortzy
