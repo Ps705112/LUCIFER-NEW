@@ -12,6 +12,7 @@ class Database:
         self.db = self._client[database_name]
         self.col = self.db.users
         self.grp = self.db.groups
+        self.misc = self.db.misc
         self.verify_id = self.db.verify_id
 
 
