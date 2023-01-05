@@ -9,6 +9,7 @@ class Database:
         self.db = self._client[database_name]
         self.col = self.db.users
         self.grp = self.db.groups
+        self.verify_id = self.db.verify_id
 
 
     def new_user(self, id, name):
@@ -144,6 +145,105 @@ class Database:
 
     async def get_db_size(self):
         return (await self.db.command("dbstats"))['dataSize']
+
+#verification 
+
+
+    async def get_notcopy_user(self, user_id):
+        user_id = int(user_id)
+
+        user = await self.misc.find_one({"user_id": user_id})
+        ist_timezone = pytz.timezone('Asia/Kolkata')
+
+        if not user:
+            res = {
+                "user_id": user_id,
+                "last_verified": datetime.datetime(2020, 5, 17, 0, 0, 0, tzinfo=ist_timezone),
+                "second_time_verified": datetime.datetime(2019, 5, 17, 0, 0, 0, tzinfo=ist_timezone),
+            }
+
+            user = await self.misc.insert_one(res)
+
+        return user
+
+    async def update_notcopy_user(self, user_id, value:dict):
+        user_id = int(user_id)
+        myquery = {"user_id": user_id}
+        newvalues = { "$set": value }
+        await self.misc.update_one(myquery, newvalues)
+
+    async def is_user_verified(self, user_id):
+        """
+        The user object is retrieved using the get_notcopy_user() method, which takes a user_id as an argument and returns a user object containing information about the user.
+        The pastDate variable is set to the value of the last_verified field in the user object. If this field is not present in the user object, an Exception is raised and the user object is retrieved again using the get_notcopy_user() method.
+        The ist_timezone variable is set to the time zone for India Standard Time.
+        The pastDate variable is converted to the India Standard Time time zone using the .astimezone() method.
+        The current_time variable is set to the current time in the India Standard Time time zone using the datetime.now() method.
+        The seconds_since_midnight variable is set to the total number of seconds since midnight of the current day in the India Standard Time time zone. This is calculated by taking the difference between the current time and a datetime instance representing midnight of the current day in the India Standard Time time zone.
+        The time_diff variable is set to the difference between the current_time and the pastDate variables. This is a timedelta instance representing the amount of time that has elapsed between the two times.
+        The total_seconds variable is set to the total number of seconds represented by the time_diff timedelta instance. This is calculated using the .total_seconds() method.
+        The code returns True if the total_seconds is less than or equal to the seconds_since_midnight, and False otherwise. This indicates whether the pastDate time is within the same day as the current time.
+
+        :param user_id: The user's ID
+        :return: The number of seconds since the user was last verified.
+        """
+        user = await self.get_notcopy_user(user_id)
+
+        try:
+            pastDate = user["last_verified"]
+        except Exception:
+            user = await self.get_notcopy_user(user_id)
+            pastDate = user["last_verified"]
+
+        ist_timezone = pytz.timezone('Asia/Kolkata')
+        pastDate = pastDate.astimezone(ist_timezone)
+        current_time = datetime.datetime.now(tz=ist_timezone)
+
+        seconds_since_midnight = (current_time - datetime.datetime(current_time.year, current_time.month, current_time.day, 0, 0, 0, tzinfo=ist_timezone)).total_seconds()
+
+        # Calculate the difference between the two times
+        time_diff = current_time - pastDate
+
+        # Get the total number of seconds between the two times
+        total_seconds = time_diff.total_seconds()
+        return total_seconds <= seconds_since_midnight
+
+    async def use_second_shortener(self, user_id):
+        user = await self.get_notcopy_user(user_id)
+        if not user.get("second_time_verified"):
+            ist_timezone = pytz.timezone('Asia/Kolkata')
+            await self.update_notcopy_user(user_id, {"second_time_verified":datetime.datetime(2019, 5, 17, 0, 0, 0, tzinfo=ist_timezone)})
+            user = await self.get_notcopy_user(user_id)
+
+        if await self.is_user_verified(user_id):
+
+            try:
+                pastDate = user["last_verified"]
+            except Exception:
+                user = await self.get_notcopy_user(user_id)
+                pastDate = user["last_verified"]
+
+            ist_timezone = pytz.timezone('Asia/Kolkata')
+            pastDate = pastDate.astimezone(ist_timezone)
+            current_time = datetime.datetime.now(tz=ist_timezone)
+            time_difference = current_time - pastDate
+            if time_difference > datetime.timedelta(seconds=10800):
+                pastDate = user["last_verified"].astimezone(ist_timezone)
+                second_time = user["second_time_verified"].astimezone(ist_timezone)
+                return second_time < pastDate
+
+        return False
+    async def create_verify_id(self, user_id: int, hash):
+        res = {"user_id": user_id, "hash":hash, "verified":False}
+        return await self.verify_id.insert_one(res)
+
+    async def get_verify_id_info(self, user_id: int, hash):
+        return await self.verify_id.find_one({"user_id": user_id, "hash": hash})
+    
+    async def update_verify_id_info(self, user_id, hash, value: dict):
+        myquery = {"user_id": user_id, "hash": hash}
+        newvalues = { "$set": value }
+        return await self.verify_id.update_one(myquery, newvalues)
 
 
 db = Database(DATABASE_URI, DATABASE_NAME)
