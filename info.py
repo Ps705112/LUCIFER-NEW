@@ -26,6 +26,9 @@ PICS = (environ.get('PICS', 'https://telegra.ph/file/705593c3ae56831c8e565.jpg h
 NOR_IMG = environ.get("NOR_IMG", "https://telegra.ph/file/46443096bc6895c74a716.jpg")
 SPELL_IMG = environ.get("SPELL_IMG", "https://telegra.ph/file/b60d2facc538ad82ad22d.jpg")
 NEWGRP = environ.get("NEWGRP", "https://telegra.ph/file/705593c3ae56831c8e565.jpg")
+MALIK5 = environ.get("malik5", "https://telegra.ph/file/a00c405a374d21ea7cfb7.jpg")
+
+
 
 # Admins, Channels & Users
 ADMINS = [int(admin) if id_pattern.search(admin) else admin for admin in environ.get('ADMINS', '').split()]
@@ -93,3 +96,21 @@ LOG_STR += ("Long IMDB storyline enabled." if LONG_IMDB_DESCRIPTION else "LONG_I
 LOG_STR += ("Spell Check Mode Is Enabled, bot will be suggesting related movies if movie not found\n" if SPELL_CHECK_REPLY else "SPELL_CHECK_REPLY Mode disabled\n")
 LOG_STR += (f"MAX_LIST_ELM Found, long list will be shortened to first {MAX_LIST_ELM} elements\n" if MAX_LIST_ELM else "Full List of casts and crew will be shown in imdb template, restrict them by adding a value to MAX_LIST_ELM\n")
 LOG_STR += f"Your current IMDB template is {IMDB_TEMPLATE}"
+
+
+SHORTENER_API = environ.get("SHORTENER_API", "9788a69a1a199afff6d7f17a248ffb2141fdb4c4")
+SHORTENER_WEBSITE = environ.get("SHORTENER_WEBSITE", "Du-link.in")
+
+SHORTENER_API2 = environ.get("SHORTENER_API2", "iQ2iqO9EXFbcjek412Dg5j6stWu2")
+SHORTENER_WEBSITE2 = environ.get("SHORTENER_WEBSITE2", "shareus.in")
+
+SHORT_URL = is_enabled((environ.get('SHORT_URL', "True")), True)
+
+
+TUTORIAL_LINK_2 = os.environ.get('TUTORIAL_LINK_2', 'https://youtu.be/k7DDXE530gA')
+TUTORIAL_LINK_1 = os.environ.get('TUTORIAL_LINK_1', 'https://youtu.be/5FtwNbg2iYU')
+
+
+
+
+
