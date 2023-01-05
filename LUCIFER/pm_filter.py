@@ -2,7 +2,11 @@ import asyncio
 import re
 import ast
 import math
-
+import datetime
+import time
+import string
+import random
+from datetime import datetime
 from pyrogram.errors.exceptions.bad_request_400 import MediaEmpty, PhotoInvalidDimensions, WebpageMediaEmpty
 from Script import script
 import pyrogram
@@ -13,7 +17,7 @@ from info import ADMINS, AUTH_CHANNEL, AUTH_USERS, CUSTOM_FILE_CAPTION, MSG_ALRT
 from pyrogram.types import InlineKeyboardMarkup, InlineKeyboardButton, CallbackQuery
 from pyrogram import Client, filters, enums
 from pyrogram.errors import FloodWait, UserIsBlocked, MessageNotModified, PeerIdInvalid
-from utils import get_size, is_subscribed, get_poster, temp, get_settings, save_group_settings, search_gagala
+from utils import get_shortlink, get_size, is_subscribed, get_poster, temp, get_settings, save_group_settings, search_gagala
 from database.users_chats_db import db
 from database.ia_filterdb import Media, get_file_details, get_search_results, get_bad_files
 from database.filters_mdb import (
@@ -410,6 +414,29 @@ async def cb_handler(client: Client, query: CallbackQuery):
             alert = alert.replace("\\n", "\n").replace("\\t", "\t")
             await query.answer(alert, show_alert=True)
     if query.data.startswith("file"):
+            verify_id = ''.join(random.choices(string.ascii_uppercase + string.digits, k=7))
+
+            await db.create_verify_id(user_id, verify_id)
+
+            buttons = [
+                    [
+                        InlineKeyboardButton(
+                            text="🔹 Click hare to Verify 🔹", url=await get_shortlink(f"https://telegram.me/{temp.U_NAME}?start=notcopy_{user_id}_{verify_id}", is_second_shortener)
+                        ),
+                    ],
+                    [
+                        InlineKeyboardButton(
+                            text="🌀 How to verify 🌀", url=f'https://youtu.be/R0Fhv079dhQ')
+                    ]
+                    
+                ]
+
+            text = f"You'r not verified today. Please verify now and get unlimited access for 1 day)"
+            if query.message.chat.type  == "private":
+                return await query.message.reply_text(text, reply_markup=InlineKeyboardMarkup(buttons))
+
+        # User Verifying 
+
         ident, req, file_id = query.data.split("#")
         if int(req) != 0 and query.from_user.id != int(req):
             return await query.answer(script.ALRT_TXT, show_alert=True)
@@ -475,6 +502,32 @@ async def cb_handler(client: Client, query: CallbackQuery):
             logger.exception(e, exc_info=True)
                 
     elif query.data.startswith("checksub"):
+        # User Verifying
+        user_id = query.from_user.id
+        is_second_shortener = await db.use_second_shortener(user_id)
+        if not await db.is_user_verified(user_id) or is_second_shortener:
+            verify_id = ''.join(random.choices(string.ascii_uppercase + string.digits, k=7))
+
+            await db.create_verify_id(user_id, verify_id)
+
+            buttons = [
+                    [
+                        InlineKeyboardButton(
+                            text="🔹 Click hare to Verify 🔹", url=await get_shortlink(f"https://telegram.me/{temp.U_NAME}?start=notcopy_{user_id}_{verify_id}", is_second_shortener)
+                        ),
+                    ],
+                    [
+                        InlineKeyboardButton(
+                            text="🌀 How to verify 🌀", url=f'https://youtu.be/R0Fhv079dhQ')
+                    ]
+                    
+                ]
+            num = 2 if is_second_shortener else 1
+            text = f"You'r not verified today. Please verify - ({num}) now and get unlimited access for 1 day)"
+            if query.message.chat.type  == "private":
+                return await query.message.reply_text(text, reply_markup=InlineKeyboardMarkup(buttons))
+
+        # User Verifying
         if AUTH_CHANNEL and not await is_subscribed(client, query):
             await query.answer("First Join our Back up channel !", show_alert=True)
             return
