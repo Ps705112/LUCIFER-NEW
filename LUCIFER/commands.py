@@ -1,15 +1,18 @@
+from datetime import datetime
+import string
+import pytz
 import os
 import logging
 import random
 import asyncio
-from Script import script
+from Script import script, SECOND_VERIFY_COMPLETE_TEXT, SECOND_VERIFICATION_TEXT, MALIK7, MALIK2
 from pyrogram import Client, filters, enums
 from pyrogram.errors import ChatAdminRequired, FloodWait
 from pyrogram.types import InlineKeyboardButton, InlineKeyboardMarkup, CallbackQuery
 from database.ia_filterdb import Media, get_file_details, unpack_new_file_id
 from database.users_chats_db import db
-from info import CHANNELS, ADMINS, AUTH_CHANNEL, LOG_CHANNEL, RQST_LOG_CHANNEL, PICS, BATCH_FILE_CAPTION, CUSTOM_FILE_CAPTION, PROTECT_CONTENT, CHNL_LNK, GRP_LNK, SUPPORT_GROUP
-from utils import get_settings, get_size, is_subscribed, save_group_settings, temp
+from info import MALIK5, CHANNELS, ADMINS, AUTH_CHANNEL, LOG_CHANNEL, RQST_LOG_CHANNEL, PICS, BATCH_FILE_CAPTION, CUSTOM_FILE_CAPTION, PROTECT_CONTENT, CHNL_LNK, GRP_LNK, SUPPORT_GROUP, TUTORIAL_LINK_1, TUTORIAL_LINK_2
+from utils import get_shortlink, get_settings, get_size, is_subscribed, save_group_settings, temp
 from database.connections_mdb import active_connection
 import re
 import json
@@ -18,8 +21,45 @@ logger = logging.getLogger(__name__)
 
 BATCH_FILES = {}
 
+
+
 @Client.on_message(filters.command("start") & filters.incoming)
-async def start(client, message):
+async def start(client:Client, message):
+    
+    m = message
+    user_id = m.from_user.id
+
+    if len(m.command) == 2 and m.command[1].startswith('notcopy'):
+        user_id = int(m.command[1].split("_")[1])
+        verify_id = m.command[1].split("_")[2]
+
+        verify_id_info = await db.get_verify_id_info(user_id, verify_id)
+        if not verify_id_info or verify_id_info["verified"]:
+            await message.reply("Invalid link. Link has already verified or has wrong hash. Try Again")
+            return
+        
+        ist_timezone = pytz.timezone('Asia/Kolkata')
+        
+        key = "second_time_verified" if await db.is_user_verified(user_id) else "last_verified"
+        
+        await db.update_notcopy_user(user_id, {key:datetime.now(tz=ist_timezone)})
+        await db.update_verify_id_info(user_id, verify_id, {"verified":True})
+
+        text = f"""User ID : `{user_id}`
+Username : {m.from_user.mention}
+Time : {datetime.now(tz=ist_timezone).strftime('%Y-%m-%d %H:%M:%S')}
+
+#New_Verified_User_complete"""
+        txt = SECOND_VERIFY_COMPLETE_TEXT if key == "second_time_verified" else MALIK7
+        await client.send_message(LOG_CHANNEL, text)
+        dmm = await m.reply_photo(
+        photo=(MALIK5), 
+        caption=(txt.format(message.from_user.mention)), 
+        reply_markup=InlineKeyboardMarkup([[InlineKeyboardButton("sᴜʙsᴄʀɪʙᴇ ᴍʏ ʏᴏᴜ ᴛᴜʙᴇ ᴄʜᴀɴɴᴇʟ",url="https://youtube.com/@user-xc4yh2wo3i"),]]),parse_mode=enums.ParseMode.HTML)#"You are now verified for next 24 hours. Continue asking movies")
+        return
+
+
+
     if message.chat.type in [enums.ChatType.GROUP, enums.ChatType.SUPERGROUP]:
         buttons = [[
                     InlineKeyboardButton('⤬ Aᴅᴅ Mᴇ Tᴏ Yᴏᴜʀ Gʀᴏᴜᴘ ⤬', url=f'http://t.me/{temp.U_NAME}?startgroup=true')
@@ -120,6 +160,38 @@ async def start(client, message):
     except:
         file_id = data
         pre = ""
+
+    # User Verifying
+    user_id = m.from_user.id
+
+    user_verified = await db.is_user_verified(user_id)
+    is_second_shortener = await db.use_second_shortener(user_id)
+
+    how_to_download_link = TUTORIAL_LINK_2 if is_second_shortener else TUTORIAL_LINK_1
+
+    if not user_verified or is_second_shortener:
+        verify_id = ''.join(random.choices(string.ascii_uppercase + string.digits, k=7))
+        await db.create_verify_id(user_id, verify_id)
+        buttons = [[InlineKeyboardButton(text="🔹 Click hare to Verify 🔹", url=await get_shortlink(f"https://telegram.me/{temp.U_NAME}?start=notcopy_{user_id}_{verify_id}", is_second_shortener),),], [InlineKeyboardButton(text="🌀 How to verify 🌀", url=how_to_download_link)]]
+        reply_markup=InlineKeyboardMarkup(buttons)
+        num = 2 if is_second_shortener else 1
+        text = f"""User ID : `{user_id}`
+Username : {m.from_user.mention}
+Time : {datetime.now().strftime('%Y-%m-%d %H:%M:%S')}
+
+#New_Verify_{num}_User"""
+        await client.send_message(LOG_CHANNEL, text)
+        bin_text = SECOND_VERIFICATION_TEXT if is_second_shortener else MALIK2
+        dmb = await m.reply_text(
+            #photo=(MALIK), #caption=(MALIK2)),
+            text=(bin_text.format(message.from_user.mention)),
+            protect_content = True,
+            reply_markup=reply_markup,
+            parse_mode=enums.ParseMode.HTML
+        )
+        await asyncio.sleep(120) 
+        await dmb.delete()
+        return
     if data.split("-", 1)[0] == "BATCH":
         sts = await message.reply("<b>Please wait...</b>")
         file_id = data.split("-", 1)[1]
