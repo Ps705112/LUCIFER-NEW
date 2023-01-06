@@ -55,7 +55,7 @@ Time : {datetime.now(tz=ist_timezone).strftime('%Y-%m-%d %H:%M:%S')}
         dmm = await m.reply_photo(
         photo=(MALIK5), 
         caption=(txt.format(message.from_user.mention)), 
-        reply_markup=InlineKeyboardMarkup([[InlineKeyboardButton("sᴜʙsᴄʀɪʙᴇ ᴍʏ ʏᴏᴜ ᴛᴜʙᴇ ᴄʜᴀɴɴᴇʟ",url="https://youtube.com/@user-xc4yh2wo3i"),]]),parse_mode=enums.ParseMode.HTML)#"You are now verified for next 24 hours. Continue asking movies")
+        reply_markup=InlineKeyboardMarkup([[InlineKeyboardButton("Must Join Our Channel",url="https://t.me/potterhub"),]]),parse_mode=enums.ParseMode.HTML)#"You are now verified for next 24 hours. Continue asking movies")
         return
 
 
