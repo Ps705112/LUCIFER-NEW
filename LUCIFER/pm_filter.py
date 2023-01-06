@@ -1429,13 +1429,12 @@ async def advantage_spell_chok(msg):
     btn = [[
         InlineKeyboardButton(
             text="ɪɴsᴛʀᴜᴄᴛɪᴏɴs",
-            callback_data="splmd"
-        ),
-        InlineKeyboardButton(
-            text="ɢᴏᴏɢʟᴇ",
-            url=f"https://google.com/search?q={search}"
+            url="https://t.me/potter_help_bot"
         )
     ]]
+
+
+
     btn2 = [[
         InlineKeyboardButton(
             text=movie.strip(),
