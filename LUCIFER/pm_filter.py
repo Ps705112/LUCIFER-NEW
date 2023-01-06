@@ -1448,7 +1448,7 @@ async def advantage_spell_chok(msg):
         caption=(script.CUDNT_FND),
         reply_markup=InlineKeyboardMarkup(btn)
     )
-    await asyncio.sleep(5)
+    await asyncio.sleep(15)
     await spl1.edit("<b>I Cᴏᴜʟᴅɴ'ᴛ Fɪɴᴅ Aɴʏᴛʜɪɴɢ Rᴇʟᴀᴛᴇᴅ ᴛᴏ Tʜᴀᴛ\nDɪᴅ Yᴏᴜ Mᴇᴀɴ Aɴʏ Oɴᴇ ᴏғ Tʜᴇsᴇ ?</b>",
         reply_markup=InlineKeyboardMarkup(btn2)
     )
