@@ -1428,7 +1428,7 @@ async def advantage_spell_chok(msg):
     SPELL_CHECK[msg.id] = movielist
     btn = [[
         InlineKeyboardButton(
-            text="ɪɴsᴛʀᴜᴄᴛɪᴏɴs",
+            text="Request Your Movie",
             url="https://t.me/potter_help_bot"
         )
     ]]
